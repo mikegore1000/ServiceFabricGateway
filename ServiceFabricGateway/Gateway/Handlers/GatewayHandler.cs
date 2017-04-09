@@ -7,12 +7,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Services.Client;
 using Newtonsoft.Json.Linq;
+using Polly;
 
 namespace Gateway.Handlers
 {
     // TODO: Transient retries
     public class GatewayHandler : DelegatingHandler
     {
+        // TODO: Need to do some testing to properly define the policy, current is based on link below.  This is more an example
+        // https://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.getresponse(v=vs.110).aspx
+
+        // TODO: List below maps to sample from Polly docs - however, this seems fairly complete based on
+        // http://www.restapitutorial.com/httpstatuscodes.html
+        private static readonly HttpStatusCode[] HttpStatusCodesWorthRetrying =
+        {
+            HttpStatusCode.RequestTimeout,
+            HttpStatusCode.InternalServerError,
+            HttpStatusCode.BadGateway,
+            HttpStatusCode.ServiceUnavailable,
+            HttpStatusCode.GatewayTimeout
+        };
+
         private readonly HttpClient client;
 
         private readonly List<GatewayRoute> routes = new List<GatewayRoute>
@@ -42,10 +57,26 @@ namespace Gateway.Handlers
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
 
-            var serviceUri = await GetAddress(matchedRoute, routePostfix, cancellationToken);
-            var response = await ProxyRequest(serviceUri, request);
+            // TODO: Make the retry policy configurable
+            var policy = Policy
+                .Handle<HttpRequestException>()
+                .OrResult<HttpResponseMessage>(r => HttpStatusCodesWorthRetrying.Contains(r.StatusCode))
+                .WaitAndRetryAsync(new[]
+                {
+                    TimeSpan.FromSeconds(0.2),
+                    TimeSpan.FromSeconds(0.4),
+                    TimeSpan.FromSeconds(0.8)
+                });
+
+            var response = await policy.ExecuteAsync(() => CallService(request, cancellationToken, matchedRoute, routePostfix));
 
             return response;
+        }
+
+        private async Task<HttpResponseMessage> CallService(HttpRequestMessage request, CancellationToken cancellationToken, GatewayRoute matchedRoute, string routePostfix)
+        {
+            var serviceUri = await GetAddress(matchedRoute, routePostfix, cancellationToken);
+            return await ProxyRequest(serviceUri, request);
         }
 
         private Task<HttpResponseMessage> ProxyRequest(Uri serviceUri, HttpRequestMessage request)
