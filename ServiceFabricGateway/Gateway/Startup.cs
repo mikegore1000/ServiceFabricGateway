@@ -49,8 +49,6 @@ namespace Gateway
 
         private static HttpClient CreateClient()
         {
-            // TODO: Take into account this http://byterot.blogspot.co.uk/2016/07/singleton-httpclient-dns.html
-
             return new HttpClient();
         }
     }
