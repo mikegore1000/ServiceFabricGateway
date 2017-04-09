@@ -9,6 +9,9 @@
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="GatewayPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides />
+    <Policies>
+      <EndpointBindingPolicy EndpointRef="ServiceEndpoint" CertificateRef="MikeTestCert" />
+    </Policies>
   </ServiceManifestImport>
   <DefaultServices>
     <!-- The section below creates instances of service types, when an instance of this 
@@ -22,4 +25,7 @@
       </StatelessService>
     </Service>
   </DefaultServices>
+  <Certificates>
+    <EndpointCertificate X509StoreName="MY" X509FindValue="73 64 87 54 5a 5e c8 09 63 84 f0 a7 1b 68 70 d4 ae 6e 6b 62" Name="MikeTestCert" />
+  </Certificates>
 </ApplicationManifest>
