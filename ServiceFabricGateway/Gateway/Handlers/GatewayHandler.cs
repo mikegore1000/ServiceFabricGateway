@@ -17,7 +17,8 @@ namespace Gateway.Handlers
 
         private readonly List<GatewayRoute> routes = new List<GatewayRoute>
         {
-            new GatewayRoute("/finance/test", "fabric:/ServiceFabricSpiking/TestApi")
+            new GatewayRoute("/finance/test", "fabric:/ServiceFabricSpiking/TestApi"),
+            new GatewayRoute("/finance/test2", "fabric:/ServiceFabricSpiking/TestApi2")
         };
 
         public GatewayHandler(HttpClient client)
