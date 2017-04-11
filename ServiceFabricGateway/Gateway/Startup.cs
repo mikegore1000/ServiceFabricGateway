@@ -41,9 +41,7 @@ namespace Gateway
 
             // Configure Web API for self-host. 
             HttpConfiguration config = new HttpConfiguration();
-
-            config.MessageHandlers.Add(new GatewayHandler(client));
-
+            config.MessageHandlers.Add(new GatewayHandler(client, new NamingServiceInstanceLookup()));
             appBuilder.UseWebApi(config);
         }
 

@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.ServiceFabric.Services.Client;
-using Newtonsoft.Json.Linq;
 using Polly;
 
 namespace Gateway.Handlers
 {
-    // TODO: Transient retries
+    // TODO: Test Transient retries
     public class GatewayHandler : DelegatingHandler
     {
         // TODO: Need to do some testing to properly define the policy, current is based on link below.  This is more an example
@@ -29,16 +26,22 @@ namespace Gateway.Handlers
         };
 
         private readonly HttpClient client;
+        private readonly IServiceInstanceLookup instanceLookup;
 
-        private readonly List<GatewayRoute> routes = new List<GatewayRoute>
+        public GatewayHandler(HttpClient client, IServiceInstanceLookup instanceLookup)
         {
-            new GatewayRoute("/finance/test", "fabric:/ServiceFabricSpiking/TestApi"),
-            new GatewayRoute("/finance/test2", "fabric:/ServiceFabricSpiking/TestApi2")
-        };
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
 
-        public GatewayHandler(HttpClient client)
-        {
+            if (instanceLookup == null)
+            {
+                throw new ArgumentNullException(nameof(instanceLookup));
+            }
+
             this.client = client;
+            this.instanceLookup = instanceLookup;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -48,11 +51,12 @@ namespace Gateway.Handlers
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
 
-            var routeKey = $"{request.RequestUri.Segments[0]}{request.RequestUri.Segments[1]}{request.RequestUri.Segments[2]}";
-            var matchedRoute = routes.SingleOrDefault(r => r.Matches(routeKey));
-            var routePostfix = string.Concat(request.RequestUri.Segments.Skip(3));
+            var domain = request.RequestUri.Segments[1].Replace("/", "").ToLowerInvariant();
+            var service = request.RequestUri.Segments[2].Replace("/", "").ToLowerInvariant();
 
-            if (matchedRoute == null)
+            var fabricAddress = $"fabric:/{domain}-{service}/{service}";
+
+            if (await instanceLookup.GetAddress(fabricAddress, cancellationToken) == null)
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
@@ -68,14 +72,14 @@ namespace Gateway.Handlers
                     TimeSpan.FromSeconds(0.8)
                 });
 
-            var response = await policy.ExecuteAsync(() => CallService(request, cancellationToken, matchedRoute, routePostfix));
+            var response = await policy.ExecuteAsync(() => CallService(fabricAddress, request, cancellationToken));
 
             return response;
         }
 
-        private async Task<HttpResponseMessage> CallService(HttpRequestMessage request, CancellationToken cancellationToken, GatewayRoute matchedRoute, string routePostfix)
+        private async Task<HttpResponseMessage> CallService(string fabricAddress, HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var serviceUri = await GetAddress(matchedRoute, routePostfix, cancellationToken);
+            var serviceUri = await GetAddress(fabricAddress, request.RequestUri, cancellationToken);
             return await ProxyRequest(serviceUri, request);
         }
 
@@ -86,18 +90,10 @@ namespace Gateway.Handlers
             return client.SendAsync(proxiedRequest);
         }
 
-        private async Task<Uri> GetAddress(GatewayRoute matchedRoute, string routePostfix, CancellationToken cancellationToken)
+        private async Task<Uri> GetAddress(string fabricAddress, Uri requestUri, CancellationToken cancellationToken)
         {
-            var resolver = ServicePartitionResolver.GetDefault();
-            var resolved = await resolver.ResolveAsync(
-                new Uri(matchedRoute.FabricAddress),
-                new ServicePartitionKey(),
-                cancellationToken
-            );
-
-            JObject addresses = JObject.Parse(resolved.GetEndpoint().Address);
-            var baseUri = new Uri((string) addresses["Endpoints"].First());
-            return new Uri(baseUri, $"{matchedRoute.RouteKey}/{routePostfix}");
+            var baseUri = await instanceLookup.GetAddress(fabricAddress, cancellationToken);
+            return new Uri(baseUri, requestUri.PathAndQuery);
         }
     }
 }

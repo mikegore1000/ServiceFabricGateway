@@ -1,0 +1,22 @@
+using System;
+using System.Net.Http;
+using System.Web.Http;
+using Gateway.Handlers;
+using Owin;
+
+namespace Gateway.Tests.Handlers
+{
+    public class StartupBootstrapper
+    {
+        public void Configuration(IAppBuilder appBuilder, Func<HttpRequestMessage, HttpResponseMessage> requestHandler, Func<string, Uri> serviceRouting)
+        {
+            var client = new HttpClient(new FakeHttpMessageHandler(requestHandler));
+
+            // Configure Web API for self-host. 
+            HttpConfiguration config = new HttpConfiguration();
+            config.MessageHandlers.Add(new GatewayHandler(client, new FakeServiceInstanceLookup(serviceRouting)));
+
+            appBuilder.UseWebApi(config);
+        }
+    }
+}
