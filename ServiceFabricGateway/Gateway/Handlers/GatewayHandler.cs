@@ -46,15 +46,12 @@ namespace Gateway.Handlers
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (request.RequestUri.Segments.Length < 3)
+            var fabricAddress = request.RequestUri.ToFabricAddress();
+
+            if (fabricAddress == null)
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
-
-            var domain = request.RequestUri.Segments[1].Replace("/", "").ToLowerInvariant();
-            var service = request.RequestUri.Segments[2].Replace("/", "").ToLowerInvariant();
-
-            var fabricAddress = $"fabric:/{domain}-{service}/{service}";
 
             if (await instanceLookup.GetAddress(fabricAddress, cancellationToken) == null)
             {
