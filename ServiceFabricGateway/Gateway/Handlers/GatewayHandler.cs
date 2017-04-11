@@ -46,11 +46,6 @@ namespace Gateway.Handlers
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (string.Compare(request.RequestUri.Segments[1].Replace("/", ""), "probe", StringComparison.InvariantCultureIgnoreCase) == 0)
-            {
-                return new HttpResponseMessage(HttpStatusCode.OK);
-            }
-
             if (request.RequestUri.Segments.Length < 3)
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);

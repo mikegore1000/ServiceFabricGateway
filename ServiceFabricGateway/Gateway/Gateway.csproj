@@ -103,6 +103,7 @@
     <Compile Include="Handlers\HttpMessageExtensions.cs" />
     <Compile Include="Handlers\IServiceInstanceLookup.cs" />
     <Compile Include="Handlers\NamingServiceInstanceLookup.cs" />
+    <Compile Include="Handlers\ProbeHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OwinCommunicationListener.cs" />
     <Compile Include="Gateway.cs" />

@@ -14,6 +14,7 @@ namespace Gateway.Tests.Handlers
 
             // Configure Web API for self-host. 
             HttpConfiguration config = new HttpConfiguration();
+            config.MessageHandlers.Add(new ProbeHandler());
             config.MessageHandlers.Add(new GatewayHandler(client, new FakeServiceInstanceLookup(serviceRouting)));
 
             appBuilder.UseWebApi(config);
