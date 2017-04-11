@@ -99,7 +99,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Handlers\GatewayHandler.cs" />
-    <Compile Include="Handlers\GatewayRoute.cs" />
     <Compile Include="Handlers\HttpMessageExtensions.cs" />
     <Compile Include="Handlers\IServiceInstanceLookup.cs" />
     <Compile Include="Handlers\NamingServiceInstanceLookup.cs" />
