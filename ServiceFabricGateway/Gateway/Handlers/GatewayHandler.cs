@@ -9,6 +9,7 @@ using Polly;
 namespace Gateway.Handlers
 {
     // TODO: Test Transient retries
+    // TODO: Implement convention to reject internal requests
     public class GatewayHandler : DelegatingHandler
     {
         // TODO: Need to do some testing to properly define the policy, current is based on link below.  This is more an example
