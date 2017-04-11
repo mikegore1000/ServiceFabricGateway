@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Handlers\FakeHttpMessageHandler.cs" />
+    <Compile Include="Handlers\FakeServiceInstanceLookup.cs" />
     <Compile Include="Handlers\GatewayHandlerTests.cs" />
     <Compile Include="Handlers\InvalidGatewayRouteTests.cs" />
     <Compile Include="Handlers\Specification.cs" />
