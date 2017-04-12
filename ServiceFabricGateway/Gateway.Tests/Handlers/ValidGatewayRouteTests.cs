@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
@@ -83,6 +85,57 @@ namespace Gateway.Tests.Handlers
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(recievedQuery, Is.EqualTo("?" + query));
+        }
+
+        [Test]
+        public async Task when_sending_a_body_it_is_proxied_to_and_from()
+        {
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = new StringContent("TEST-BODY")
+            };
+
+            var result = await new Specification()
+                .WithRequestHandler(r =>
+                {
+                    var body = r.Content.ReadAsStringAsync().Result;
+
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(body)
+                    };
+                })
+                .WithServiceRouting(x => new Uri("http://mytestserver"))
+                .Send(request, "/finance/test");
+
+            var resultBody = await result.Content.ReadAsStringAsync();
+
+            Assert.That(resultBody, Is.EqualTo("TEST-BODY"));
+        }
+
+        [Test]
+        public async Task when_sending_headers_they_are_proxied()
+        {
+            string capturedRequestHeaderValue = null;
+
+            var request = new HttpRequestMessage { Method = HttpMethod.Get };
+            request.Headers.Add("X-MyRequestHeader", "REQUEST");
+
+            var result = await new Specification()
+                .WithRequestHandler(r =>
+                {
+                    capturedRequestHeaderValue = r.Headers.GetValues("X-MyRequestHeader").SingleOrDefault();
+
+                    var response = new HttpResponseMessage(HttpStatusCode.OK);
+                    response.Headers.Add("X-MyResponseHeader", "RESPONSE");
+                    return response;
+                })
+                .WithServiceRouting(x => new Uri("http://mytestserver"))
+                .Send(request, "/finance/test");
+           
+            Assert.That(capturedRequestHeaderValue, Is.EqualTo("REQUEST"));
+            Assert.That(result.Headers.GetValues("X-MyResponseHeader").Single(), Is.EqualTo("RESPONSE"));
         }
     }
 }
