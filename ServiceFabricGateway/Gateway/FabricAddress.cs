@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace Gateway.Handlers
+namespace Gateway
 {
     public class FabricAddress
     {

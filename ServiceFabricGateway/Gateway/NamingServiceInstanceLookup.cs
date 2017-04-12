@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Services.Client;
 using Newtonsoft.Json.Linq;
 
-namespace Gateway.Handlers
+namespace Gateway
 {
     internal class NamingServiceInstanceLookup : IServiceInstanceLookup
     {

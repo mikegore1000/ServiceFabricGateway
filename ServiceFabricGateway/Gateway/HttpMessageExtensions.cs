@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 
-namespace Gateway.Handlers
+namespace Gateway
 {
     static class HttpMessageExtensions
     {

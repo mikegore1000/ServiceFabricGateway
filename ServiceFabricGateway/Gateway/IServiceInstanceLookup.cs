@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Gateway.Handlers
+namespace Gateway
 {
     public interface IServiceInstanceLookup
     {

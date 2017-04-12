@@ -98,12 +98,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FabricAddress.cs" />
     <Compile Include="Handlers\GatewayHandler.cs" />
-    <Compile Include="Handlers\HttpMessageExtensions.cs" />
-    <Compile Include="Handlers\IServiceInstanceLookup.cs" />
-    <Compile Include="Handlers\NamingServiceInstanceLookup.cs" />
     <Compile Include="Handlers\ProbeHandler.cs" />
-    <Compile Include="Handlers\FabricAddress.cs" />
+    <Compile Include="HttpMessageExtensions.cs" />
+    <Compile Include="IServiceInstanceLookup.cs" />
+    <Compile Include="NamingServiceInstanceLookup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OwinCommunicationListener.cs" />
     <Compile Include="Gateway.cs" />
