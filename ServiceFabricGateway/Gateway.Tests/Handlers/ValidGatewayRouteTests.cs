@@ -88,11 +88,15 @@ namespace Gateway.Tests.Handlers
         }
 
         [Test]
-        public async Task when_sending_a_body_it_is_proxied_to_and_from()
+        [TestCase("POST")]
+        [TestCase("PUT")]
+        [TestCase("PATCH")]
+        [TestCase("DELETE")]
+        public async Task when_sending_a_body_it_is_proxied_to_and_from(string method)
         {
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
+                Method = new HttpMethod(method),
                 Content = new StringContent("TEST-BODY")
             };
 
@@ -115,11 +119,16 @@ namespace Gateway.Tests.Handlers
         }
 
         [Test]
-        public async Task when_sending_headers_they_are_proxied()
+        [TestCase("GET")]
+        [TestCase("POST")]
+        [TestCase("PUT")]
+        [TestCase("PATCH")]
+        [TestCase("DELETE")]
+        public async Task when_sending_headers_they_are_proxied(string method)
         {
             string capturedRequestHeaderValue = null;
 
-            var request = new HttpRequestMessage { Method = HttpMethod.Get };
+            var request = new HttpRequestMessage { Method = new HttpMethod(method) };
             request.Headers.Add("X-MyRequestHeader", "REQUEST");
 
             var result = await new Specification()
