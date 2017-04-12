@@ -4,10 +4,10 @@ using System.Net.Http;
 
 namespace Gateway
 {
-    static class HttpMessageExtensions
+    public static class HttpMessageExtensions
     {
         // NOTE: Adapted from http://stackoverflow.com/questions/21467018/how-to-forward-an-httprequestmessage-to-another-server
-        internal static HttpRequestMessage Clone(this HttpRequestMessage req, Uri newUri)
+        public static HttpRequestMessage Clone(this HttpRequestMessage req, Uri newUri)
         {
             HttpRequestMessage clone = new HttpRequestMessage(req.Method, newUri);
 
