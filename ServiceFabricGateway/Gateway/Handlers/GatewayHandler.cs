@@ -9,7 +9,6 @@ using Polly;
 namespace Gateway.Handlers
 {
     // TODO: Test Transient retries
-    // TODO: Implement convention to reject internal requests
     public class GatewayHandler : DelegatingHandler
     {
         // NOTE: List below maps to sample from Polly docs - however, the policy for retries as implemented seems fairly complete based on:
@@ -45,35 +44,37 @@ namespace Gateway.Handlers
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var fabricAddress = request.RequestUri.ToFabricAddress();
-
-            if (fabricAddress == null)
+            try
             {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
-            }
+                var fabricAddress = new FabricAddress(request.RequestUri);
 
-            if (await instanceLookup.GetAddress(fabricAddress, cancellationToken) == null)
-            {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
-            }
-
-            // TODO: Make the retry policy configurable
-            var policy = Policy
-                .Handle<HttpRequestException>()
-                .OrResult<HttpResponseMessage>(r => HttpStatusCodesWorthRetrying.Contains(r.StatusCode))
-                .WaitAndRetryAsync(new[]
+                if (await instanceLookup.GetAddress(fabricAddress, cancellationToken) == null)
                 {
-                    TimeSpan.FromSeconds(0.2),
-                    TimeSpan.FromSeconds(0.4),
-                    TimeSpan.FromSeconds(0.8)
-                });
+                    return new HttpResponseMessage(HttpStatusCode.NotFound);
+                }
 
-            var response = await policy.ExecuteAsync(() => CallService(fabricAddress, request, cancellationToken));
+                // TODO: Make the retry policy configurable
+                var policy = Policy
+                    .Handle<HttpRequestException>()
+                    .OrResult<HttpResponseMessage>(r => HttpStatusCodesWorthRetrying.Contains(r.StatusCode))
+                    .WaitAndRetryAsync(new[]
+                    {
+                        TimeSpan.FromSeconds(0.2),
+                        TimeSpan.FromSeconds(0.4),
+                        TimeSpan.FromSeconds(0.8)
+                    });
 
-            return response;
+                var response = await policy.ExecuteAsync(() => CallService(fabricAddress, request, cancellationToken));
+
+                return response;
+            }
+            catch (FabricAddress.InvalidFabricAddressException)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+            }
         }
 
-        private async Task<HttpResponseMessage> CallService(string fabricAddress, HttpRequestMessage request, CancellationToken cancellationToken)
+        private async Task<HttpResponseMessage> CallService(FabricAddress fabricAddress, HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var serviceUri = await GetAddress(fabricAddress, request.RequestUri, cancellationToken);
             return await ProxyRequest(serviceUri, request);
@@ -86,7 +87,7 @@ namespace Gateway.Handlers
             return client.SendAsync(proxiedRequest);
         }
 
-        private async Task<Uri> GetAddress(string fabricAddress, Uri requestUri, CancellationToken cancellationToken)
+        private async Task<Uri> GetAddress(FabricAddress fabricAddress, Uri requestUri, CancellationToken cancellationToken)
         {
             var baseUri = await instanceLookup.GetAddress(fabricAddress, cancellationToken);
             return new Uri(baseUri, requestUri.PathAndQuery);

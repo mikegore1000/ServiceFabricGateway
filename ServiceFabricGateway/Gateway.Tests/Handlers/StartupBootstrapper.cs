@@ -8,7 +8,7 @@ namespace Gateway.Tests.Handlers
 {
     public class StartupBootstrapper
     {
-        public void Configuration(IAppBuilder appBuilder, Func<HttpRequestMessage, HttpResponseMessage> requestHandler, Func<string, Uri> serviceRouting)
+        public void Configuration(IAppBuilder appBuilder, Func<HttpRequestMessage, HttpResponseMessage> requestHandler, Func<FabricAddress, Uri> serviceRouting)
         {
             var client = new HttpClient(new FakeHttpMessageHandler(requestHandler));
 

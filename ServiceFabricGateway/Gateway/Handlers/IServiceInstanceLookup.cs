@@ -6,6 +6,6 @@ namespace Gateway.Handlers
 {
     public interface IServiceInstanceLookup
     {
-        Task<Uri> GetAddress(string fabricAddress, CancellationToken cancellationToken);
+        Task<Uri> GetAddress(FabricAddress fabricAddress, CancellationToken cancellationToken);
     }
 }

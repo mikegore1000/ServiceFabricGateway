@@ -12,12 +12,12 @@ namespace Gateway.Handlers
     {
         // TODO: Can't see a way to test this without reflection hacks!
         // See https://github.com/loekd/ServiceFabric.Mocks
-        public async Task<Uri> GetAddress(string fabricAddress, CancellationToken cancellationToken)
+        public async Task<Uri> GetAddress(FabricAddress fabricAddress, CancellationToken cancellationToken)
         {
             try
             {
                 var resolved = await ServicePartitionResolver.GetDefault().ResolveAsync(
-                    new Uri(fabricAddress),
+                    fabricAddress.Uri,
                     new ServicePartitionKey(),
                     ServicePartitionResolver.DefaultResolveTimeout,
                     ServicePartitionResolver.DefaultMaxRetryBackoffInterval,

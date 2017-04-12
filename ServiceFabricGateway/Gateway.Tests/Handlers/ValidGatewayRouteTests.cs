@@ -38,7 +38,7 @@ namespace Gateway.Tests.Handlers
 
             var response = await new Specification()
                 .WithRequestHandler(r => new HttpResponseMessage(HttpStatusCode.OK))
-                .WithServiceRouting(f => f == "fabric:/finance-test/test" ? new Uri("http://sometestserver/") : null)
+                .WithServiceRouting(f => f.Uri == new Uri("fabric:/finance-test/test") ? new Uri("http://sometestserver/") : null)
                 .Send(request, relativePath);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -54,7 +54,7 @@ namespace Gateway.Tests.Handlers
 
             var response = await new Specification()
                 .WithRequestHandler(r => new HttpResponseMessage(HttpStatusCode.OK))
-                .WithServiceRouting(f => f == "fabric:/finance-test/test" ? new Uri("http://sometestserver/") : null)
+                .WithServiceRouting(f => f.Uri == new Uri("fabric:/finance-test/test") ? new Uri("http://sometestserver/") : null)
                 .Send(request, relativePath);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));

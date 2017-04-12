@@ -7,14 +7,14 @@ namespace Gateway.Tests.Handlers
 {
     public class FakeServiceInstanceLookup : IServiceInstanceLookup
     {
-        private readonly Func<string, Uri> lookupFunc;
+        private readonly Func<FabricAddress, Uri> lookupFunc;
 
-        public FakeServiceInstanceLookup(Func<string, Uri> lookupFunc)
+        public FakeServiceInstanceLookup(Func<FabricAddress, Uri> lookupFunc)
         {
             this.lookupFunc = lookupFunc;
         }
 
-        public Task<Uri> GetAddress(string fabricAddress, CancellationToken cancellationToken)
+        public Task<Uri> GetAddress(FabricAddress fabricAddress, CancellationToken cancellationToken)
         {
             return Task.FromResult(lookupFunc(fabricAddress));
         }

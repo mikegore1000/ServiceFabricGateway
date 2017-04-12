@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Gateway.Handlers;
 using Microsoft.Owin.Testing;
 
 namespace Gateway.Tests.Handlers
@@ -8,7 +9,7 @@ namespace Gateway.Tests.Handlers
     public class Specification
     {
         private Func<HttpRequestMessage, HttpResponseMessage> requestHandler;
-        private Func<string, Uri> serviceRouting;
+        private Func<FabricAddress, Uri> serviceRouting;
 
         public Specification WithRequestHandler(Func<HttpRequestMessage, HttpResponseMessage> handler)
         {
@@ -16,7 +17,7 @@ namespace Gateway.Tests.Handlers
             return this;
         }
 
-        public Specification WithServiceRouting(Func<string, Uri> routing)
+        public Specification WithServiceRouting(Func<FabricAddress, Uri> routing)
         {
             this.serviceRouting = routing;
             return this;
