@@ -12,11 +12,9 @@ namespace Gateway.Handlers
     // TODO: Implement convention to reject internal requests
     public class GatewayHandler : DelegatingHandler
     {
-        // TODO: Need to do some testing to properly define the policy, current is based on link below.  This is more an example
-        // https://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.getresponse(v=vs.110).aspx
-
-        // TODO: List below maps to sample from Polly docs - however, this seems fairly complete based on
+        // NOTE: List below maps to sample from Polly docs - however, the policy for retries as implemented seems fairly complete based on:
         // http://www.restapitutorial.com/httpstatuscodes.html
+        // https://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.getresponse(v=vs.110).aspx
         private static readonly HttpStatusCode[] HttpStatusCodesWorthRetrying =
         {
             HttpStatusCode.RequestTimeout,
