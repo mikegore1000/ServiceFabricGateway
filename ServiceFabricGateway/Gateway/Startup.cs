@@ -1,10 +1,12 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Web.Http;
 using Gateway.Handlers;
 using Owin;
+using Polly;
 
 namespace Gateway
 {
@@ -42,8 +44,24 @@ namespace Gateway
             // Configure Web API for self-host. 
             HttpConfiguration config = new HttpConfiguration();
             config.MessageHandlers.Add(new ProbeHandler());
-            config.MessageHandlers.Add(new GatewayHandler(client, new NamingServiceInstanceLookup()));
+            config.MessageHandlers.Add(new GatewayHandler(client, new NamingServiceInstanceLookup(), CreateRetryPolicy()));
             appBuilder.UseWebApi(config);
+        }
+
+        private static Policy<HttpResponseMessage> CreateRetryPolicy()
+        {
+            HttpStatusCode[] httpStatusCodesWorthRetrying =
+            {
+                HttpStatusCode.ServiceUnavailable
+            };
+
+            // TODO: Make the retry policy configurable
+            var policy = Policy
+                .Handle<HttpRequestException>()
+                .OrResult<HttpResponseMessage>(r => httpStatusCodesWorthRetrying.Contains(r.StatusCode))
+                .RetryAsync(3);
+
+            return policy;
         }
 
         private static HttpClient CreateClient()

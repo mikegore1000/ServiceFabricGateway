@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -11,15 +10,11 @@ namespace Gateway.Handlers
     // TODO: Test Transient retries
     public class GatewayHandler : DelegatingHandler
     {
-        private static readonly HttpStatusCode[] HttpStatusCodesWorthRetrying =
-        {
-            HttpStatusCode.ServiceUnavailable
-        };
-
         private readonly HttpClient client;
         private readonly IServiceInstanceLookup instanceLookup;
+        private readonly Policy<HttpResponseMessage> retryPolicy;
 
-        public GatewayHandler(HttpClient client, IServiceInstanceLookup instanceLookup)
+        public GatewayHandler(HttpClient client, IServiceInstanceLookup instanceLookup, Policy<HttpResponseMessage> retryPolicy)
         {
             if (client == null)
             {
@@ -31,8 +26,14 @@ namespace Gateway.Handlers
                 throw new ArgumentNullException(nameof(instanceLookup));
             }
 
+            if (retryPolicy == null)
+            {
+                throw new ArgumentNullException(nameof(retryPolicy));
+            }
+
             this.client = client;
             this.instanceLookup = instanceLookup;
+            this.retryPolicy = retryPolicy;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -46,13 +47,7 @@ namespace Gateway.Handlers
                     return new HttpResponseMessage(HttpStatusCode.NotFound);
                 }
 
-                // TODO: Make the retry policy configurable
-                var policy = Policy
-                    .Handle<HttpRequestException>()
-                    .OrResult<HttpResponseMessage>(r => HttpStatusCodesWorthRetrying.Contains(r.StatusCode))
-                    .RetryAsync(3);
-
-                var response = await policy.ExecuteAsync(() => CallService(fabricAddress, request, cancellationToken));
+                var response = await retryPolicy.ExecuteAsync(() => CallService(fabricAddress, request, cancellationToken));
 
                 return response;
             }
