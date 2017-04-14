@@ -11,16 +11,9 @@ namespace Gateway.Handlers
     // TODO: Test Transient retries
     public class GatewayHandler : DelegatingHandler
     {
-        // NOTE: List below maps to sample from Polly docs - however, the policy for retries as implemented seems fairly complete based on:
-        // http://www.restapitutorial.com/httpstatuscodes.html
-        // https://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.getresponse(v=vs.110).aspx
         private static readonly HttpStatusCode[] HttpStatusCodesWorthRetrying =
         {
-            HttpStatusCode.RequestTimeout,
-            HttpStatusCode.InternalServerError,
-            HttpStatusCode.BadGateway,
-            HttpStatusCode.ServiceUnavailable,
-            HttpStatusCode.GatewayTimeout
+            HttpStatusCode.ServiceUnavailable
         };
 
         private readonly HttpClient client;
@@ -57,12 +50,7 @@ namespace Gateway.Handlers
                 var policy = Policy
                     .Handle<HttpRequestException>()
                     .OrResult<HttpResponseMessage>(r => HttpStatusCodesWorthRetrying.Contains(r.StatusCode))
-                    .WaitAndRetryAsync(new[]
-                    {
-                        TimeSpan.FromSeconds(0.2),
-                        TimeSpan.FromSeconds(0.4),
-                        TimeSpan.FromSeconds(0.8)
-                    });
+                    .RetryAsync(3);
 
                 var response = await policy.ExecuteAsync(() => CallService(fabricAddress, request, cancellationToken));
 
