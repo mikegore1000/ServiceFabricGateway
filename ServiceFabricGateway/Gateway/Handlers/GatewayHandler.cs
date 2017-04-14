@@ -7,7 +7,6 @@ using Polly;
 
 namespace Gateway.Handlers
 {
-    // TODO: Test Transient retries
     public class GatewayHandler : DelegatingHandler
     {
         private readonly HttpClient client;
