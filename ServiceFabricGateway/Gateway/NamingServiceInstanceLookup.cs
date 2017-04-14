@@ -10,7 +10,7 @@ namespace Gateway
 {
     internal class NamingServiceInstanceLookup : IServiceInstanceLookup
     {
-        // TODO: Can't see a way to test this without reflection hacks!
+        // NOTE: Can't see a way to test this without reflection hacks!
         // See https://github.com/loekd/ServiceFabric.Mocks
         public async Task<Uri> GetAddress(FabricAddress fabricAddress, CancellationToken cancellationToken)
         {
