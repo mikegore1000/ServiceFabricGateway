@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System.Fabric;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Web.Http;
 using Gateway.Handlers;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Owin;
 using Polly;
 
@@ -39,10 +42,11 @@ namespace Gateway
                 return errors == SslPolicyErrors.None;
             };
 
-            var client = CreateClient();
+            var client = CreateHttpClient();
 
             // Configure Web API for self-host. 
             HttpConfiguration config = new HttpConfiguration();
+            config.MessageHandlers.Add(new ApplicationInsightsTelemetryHandler(CreateTelemetryClient()));
             config.MessageHandlers.Add(new ProbeHandler());
             config.MessageHandlers.Add(new GatewayHandler(client, new NamingServiceInstanceLookup(), CreateRetryPolicy()));
             appBuilder.UseWebApi(config);
@@ -64,9 +68,24 @@ namespace Gateway
             return policy;
         }
 
-        private static HttpClient CreateClient()
+        private static HttpClient CreateHttpClient()
         {
             return new HttpClient();
+        }
+
+        private static TelemetryClient CreateTelemetryClient()
+        {
+            var config = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
+            var telemetry = config.Settings.Sections["Telemetry"];
+            var instrumentationKey = telemetry.Parameters["InstrumentationKey"].Value;
+            bool disableTelemetry;
+
+            bool.TryParse(telemetry.Parameters["DisableTelemetry"].Value, out disableTelemetry);
+
+            TelemetryConfiguration.Active.InstrumentationKey = instrumentationKey;
+            TelemetryConfiguration.Active.DisableTelemetry = disableTelemetry;
+
+            return new TelemetryClient(TelemetryConfiguration.Active);
         }
     }
 }
