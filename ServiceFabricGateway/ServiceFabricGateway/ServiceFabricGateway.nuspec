@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>ServiceFabricGateway.Application</id>
+    <version>$version$</version>
+    <title>ServiceFabricGateway.Application</title>
+    <authors>Mike Gore</authors>
+    <owners>Mike Gore</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Service Fabric Gateway deployment package</description>
+    <language>en-gb</language>
+  </metadata>
+  <files>
+   <file src="..\ServiceFabricGateway\pkg\$configuration$\**" target="pkg"/>
+    <file src="..\ServiceFabricGateway\scripts\Deploy-FabricApplication.ps1" target="scripts" />
+    <file src="..\ServiceFabricGateway\ApplicationParameters\Cloud.xml" target="ApplicationParameters" />
+    <file src="..\ServiceFabricGateway\PublishProfiles\ODProfile.xml" target="PublishProfiles" />
+  </files>
+</package>
