@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.10
+VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "ServiceFabricGateway", "ServiceFabricGateway\ServiceFabricGateway.sfproj", "{C08EA3AA-C077-428C-9D7A-10E59A5B6F0C}"
 EndProject
@@ -31,14 +31,12 @@ Global
 		{6072178D-3DA7-4D17-A856-F925E4670A1E}.Release|Any CPU.ActiveCfg = Release|x64
 		{6072178D-3DA7-4D17-A856-F925E4670A1E}.Release|x64.ActiveCfg = Release|x64
 		{6072178D-3DA7-4D17-A856-F925E4670A1E}.Release|x64.Build.0 = Release|x64
-		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Debug|x64.Build.0 = Debug|Any CPU
-		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Release|x64.ActiveCfg = Release|Any CPU
-		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Release|x64.Build.0 = Release|Any CPU
+		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Debug|x64.ActiveCfg = Debug|x64
+		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Debug|x64.Build.0 = Debug|x64
+		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Release|Any CPU.ActiveCfg = Release|x64
+		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Release|x64.ActiveCfg = Release|x64
+		{3FA6BC3E-D825-4E9B-AC9F-DEC117505FF6}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
