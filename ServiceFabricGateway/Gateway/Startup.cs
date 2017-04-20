@@ -15,6 +15,8 @@ namespace Gateway
 {
     public static class Startup
     {
+        private const int DefaultRetries = 3;
+
         // This code configures Web API. The Startup class is specified as a type
         // parameter in the WebApp.Start method.
         public static void ConfigureApp(IAppBuilder appBuilder)
@@ -54,16 +56,24 @@ namespace Gateway
 
         private static Policy<HttpResponseMessage> CreateRetryPolicy()
         {
+            var config = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
+            int retries;
+                
+            if(!int.TryParse(config.Settings.Sections["Retries"].Parameters["Attempts"].Value, out retries))
+            {
+                // Assume a default policy
+                retries = DefaultRetries;
+            }
+
             HttpStatusCode[] httpStatusCodesWorthRetrying =
             {
                 HttpStatusCode.ServiceUnavailable
             };
 
-            // TODO: Make the retry policy configurable
             var policy = Policy
                 .Handle<HttpRequestException>()
                 .OrResult<HttpResponseMessage>(r => httpStatusCodesWorthRetrying.Contains(r.StatusCode))
-                .RetryAsync(3);
+                .RetryAsync(retries);
 
             return policy;
         }

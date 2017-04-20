@@ -5,5 +5,9 @@
     <Parameter Name="InstrumentationKey" Value="##PUT_VALUE_HERE##" />
     <Parameter Name="DisableTelemetry" Value="false" />
   </Section>
+
+  <Section Name="Retries">
+    <Parameter Name="Attempts" Value="3" />
+  </Section>
   
 </Settings>
