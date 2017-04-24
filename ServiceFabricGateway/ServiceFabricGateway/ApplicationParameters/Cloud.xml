@@ -2,5 +2,9 @@
 <Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/ServiceFabricGateway" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
     <Parameter Name="Gateway_InstanceCount" Value="-1" />
+    <Parameter Name="Gateway_InstrumentationKey" Value="#{InstrumentationKey}" />
+    <Parameter Name="Gateway_DisableTelemetry" Value="#{DisableTelemetry}" />
+    <Parameter Name="Gateway_Attempts" Value="#{RetryAttempts}" />
+    <Parameter Name="Gateway_SSLCertThumbprint" Value="#{SSLCertThumbprint}" />
   </Parameters>
 </Application>

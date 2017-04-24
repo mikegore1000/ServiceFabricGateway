@@ -8,9 +8,21 @@
        ServiceManifest.xml file. -->
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="GatewayPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Telemetry">
+            <Parameter Name="InstrumentationKey" Value="[Gateway_InstrumentationKey]" />
+            <Parameter Name="DisableTelemetry" Value="[Gateway_DisableTelemetry]" />
+          </Section>
+          <Section Name="Retries">
+            <Parameter Name="Attempts" Value="[Gateway_Attempts]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
     <Policies>
-      <EndpointBindingPolicy EndpointRef="ServiceEndpoint" CertificateRef="MikeTestCert" />
+      <EndpointBindingPolicy EndpointRef="ServiceEndpoint" CertificateRef="GatewayCert" />
     </Policies>
   </ServiceManifestImport>
   <DefaultServices>
@@ -26,6 +38,6 @@
     </Service>
   </DefaultServices>
   <Certificates>
-    <EndpointCertificate X509StoreName="MY" X509FindValue="73 64 87 54 5a 5e c8 09 63 84 f0 a7 1b 68 70 d4 ae 6e 6b 62" Name="MikeTestCert" />
+    <EndpointCertificate X509StoreName="MY" X509FindValue="[Gateway_SSLCertThumbprint]" Name="GatewayCert" />
   </Certificates>
 </ApplicationManifest>
