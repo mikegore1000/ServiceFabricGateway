@@ -24,7 +24,7 @@
   -->
   <ClusterConnectionParameters ConnectionEndpoint="#{serviceFabricClientConnetionEndpoint}" AzureActiveDirectory="true" ServerCertThumbprint="#{serviceFabricClientConnectionThumbprint}"  />
   <ApplicationParameterFile Path="..\ApplicationParameters\Cloud.xml" />
-  <UpgradeDeployment Mode="Monitored" Enabled="true">
-    <Parameters FailureAction="Rollback" Force="True" />
+  <UpgradeDeployment Mode="Monitored">
+    <Parameters FailureAction="Rollback" UpgradeReplicaSetCheckTimeoutSec="1" Force="True" HealthCheckRetryTimeoutSec="5" HealthCheckStableDurationSec="5" UpgradeDomainTimeoutSec="120" />
   </UpgradeDeployment>
 </PublishProfile>
