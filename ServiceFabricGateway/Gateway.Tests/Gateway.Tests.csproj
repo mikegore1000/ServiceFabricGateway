@@ -103,7 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Handlers\FakeHttpMessageHandler.cs" />
-    <Compile Include="Handlers\FakeServiceInstanceLookup.cs" />
+    <Compile Include="Handlers\FakeClientProxy.cs" />
     <Compile Include="Handlers\GatewayHandlerTests.cs" />
     <Compile Include="Handlers\GatewayProbeTests.cs" />
     <Compile Include="Handlers\InternalServiceRouteTests.cs" />

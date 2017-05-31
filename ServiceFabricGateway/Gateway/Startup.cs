@@ -48,7 +48,7 @@ namespace Gateway
             HttpConfiguration config = new HttpConfiguration();
             config.MessageHandlers.Add(new ApplicationInsightsTelemetryHandler(CreateTelemetryClient()));
             config.MessageHandlers.Add(new ProbeHandler());
-            config.MessageHandlers.Add(new GatewayHandler(client, new NamingServiceInstanceLookup(), GetRetries()));
+            config.MessageHandlers.Add(new GatewayHandler(new ServiceDiscoveryClientProxy(client), GetRetries()));
             appBuilder.UseWebApi(config);
         }
 

@@ -14,7 +14,9 @@ namespace Gateway.Tests.Handlers
             var request = new HttpRequestMessage {Method = HttpMethod.Get};
             
             var response = await new Specification()
-                .WithServiceRouting(f => null)
+                .WithServiceRouting(f => {
+                    throw new System.Fabric.FabricServiceNotFoundException();
+                })
                 .Send(request, "invalid/route");
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
