@@ -50,11 +50,11 @@ namespace Gateway
             HttpConfiguration config = new HttpConfiguration();
             config.MessageHandlers.Add(new ApplicationInsightsTelemetryHandler(CreateTelemetryClient()));
             config.MessageHandlers.Add(new ProbeHandler());
-            config.MessageHandlers.Add(new GatewayHandler(client, new NamingServiceInstanceLookup(), CreateRetryPolicy()));
+            config.MessageHandlers.Add(new GatewayHandler(client, new NamingServiceInstanceLookup(), GetRetries()));
             appBuilder.UseWebApi(config);
         }
 
-        private static Policy<HttpResponseMessage> CreateRetryPolicy()
+        private static int GetRetries()
         {
             var config = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
             int retries;
@@ -65,17 +65,7 @@ namespace Gateway
                 retries = DefaultRetries;
             }
 
-            HttpStatusCode[] httpStatusCodesWorthRetrying =
-            {
-                HttpStatusCode.ServiceUnavailable
-            };
-
-            var policy = Policy
-                .Handle<HttpRequestException>()
-                .OrResult<HttpResponseMessage>(r => httpStatusCodesWorthRetrying.Contains(r.StatusCode))
-                .RetryAsync(retries);
-
-            return policy;
+            return retries;
         }
 
         private static HttpClient CreateHttpClient()

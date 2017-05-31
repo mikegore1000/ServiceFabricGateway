@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -13,7 +14,12 @@ namespace Gateway.Handlers
         private readonly IServiceInstanceLookup instanceLookup;
         private readonly Policy<HttpResponseMessage> retryPolicy;
 
-        public GatewayHandler(HttpClient client, IServiceInstanceLookup instanceLookup, Policy<HttpResponseMessage> retryPolicy)
+        private static readonly HttpStatusCode[] HttpStatusCodesWorthRetrying =
+            {
+                HttpStatusCode.ServiceUnavailable
+            };
+
+        public GatewayHandler(HttpClient client, IServiceInstanceLookup instanceLookup, int retries)
         {
             if (client == null)
             {
@@ -25,14 +31,22 @@ namespace Gateway.Handlers
                 throw new ArgumentNullException(nameof(instanceLookup));
             }
 
-            if (retryPolicy == null)
+            if (retries < 0)
             {
-                throw new ArgumentNullException(nameof(retryPolicy));
+                throw new ArgumentException("The number of retries must be greater than or equal to zero", nameof(retries));
             }
 
             this.client = client;
             this.instanceLookup = instanceLookup;
-            this.retryPolicy = retryPolicy;
+            this.retryPolicy = CreateRetryPolicy(retries);
+        } 
+
+        private Policy<HttpResponseMessage> CreateRetryPolicy(int retries)
+        {
+            return Policy
+                .Handle<HttpRequestException>()
+                .OrResult<HttpResponseMessage>(r => HttpStatusCodesWorthRetrying.Contains(r.StatusCode))
+                .RetryAsync(retries);
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
