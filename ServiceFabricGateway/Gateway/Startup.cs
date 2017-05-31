@@ -1,5 +1,4 @@
 ﻿using System.Fabric;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Security;
@@ -9,7 +8,6 @@ using Gateway.Handlers;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Owin;
-using Polly;
 
 namespace Gateway
 {

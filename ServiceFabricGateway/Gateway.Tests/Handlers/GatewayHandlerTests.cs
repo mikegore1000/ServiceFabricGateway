@@ -2,7 +2,6 @@
 using System.Net.Http;
 using Gateway.Handlers;
 using NUnit.Framework;
-using Polly;
 
 namespace Gateway.Tests.Handlers
 {
