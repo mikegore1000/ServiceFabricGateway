@@ -23,7 +23,7 @@ namespace Gateway.Tests.Handlers
         [Test]
         public void given_a_negative_number_of_retries_an_exception_is_thrown()
         {
-            Assert.Throws<ArgumentNullException>(() => new GatewayHandler(new HttpClient(), new FakeServiceInstanceLookup(null), -1));
+            Assert.Throws<ArgumentException>(() => new GatewayHandler(new HttpClient(), new FakeServiceInstanceLookup(null), -1));
         }
     }
 }
