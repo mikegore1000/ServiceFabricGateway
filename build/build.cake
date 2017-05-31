@@ -40,7 +40,7 @@ Task("Build-Solution")
         settings => settings.SetConfiguration(configuration)));
 
 Task("Run-Unit-Tests")
-    .Does(() => NUnit("../**/bin/" + configuration + "/*.Tests.dll"));
+    .Does(() => NUnit("../**/bin/x64/" + configuration + "/*.Tests.dll"));
 
 Task("Create-Service-Fabric-Package")
     .Does(() => MSBuild(
